@@ -25,8 +25,8 @@ function App() {
       <div className="bg-white p-6 rounded-2xl shadow-md w-80 text-center">
         <p className="mb-2">위치를 기반으로 날씨를 확인하고</p>
         <p className="mb-4 font-semibold">야외활동을 추천해드려요!</p>
-        <div className="bg-red-500 text-white p-4 rounded-lg">
-          Tailwind 작동 중인지 테스트!
+        <div className="bg-yellow-300 text-purple-700 font-extrabold text-xl p-4 rounded-xl shadow-lg">
+          Tailwind가 진짜 적용 중인지 테스트!
         </div>
         <div className="text-sm text-gray-500">
           {coords ? (
