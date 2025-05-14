@@ -4,7 +4,13 @@ function App() {
   const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(
     null
   );
-  const [weather, setWeather] = useState<any>(null); // 간단히 any로 시작
+  interface WeatherData {
+    name: string;
+    weather: { description: string }[];
+    main: { temp: number };
+  }
+
+  const [weather, setWeather] = useState<WeatherData | null>(null);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -22,9 +28,7 @@ function App() {
     if (coords) {
       const fetchWeather = async () => {
         try {
-          console.log("env:", import.meta.env);
           const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
-          console.log("apiKey:", apiKey);
           const url = `https://api.openweathermap.org/data/2.5/weather?lat=${coords.lat}&lon=${coords.lon}&appid=${apiKey}&units=metric&lang=kr`;
 
           const response = await fetch(url);
@@ -48,14 +52,25 @@ function App() {
         <p className="mb-2">위치를 기반으로 날씨를 확인하고</p>
         <p className="mb-4 font-semibold">야외활동을 추천해드려요!</p>
 
-        {weather ? (
-          <div className="text-lg font-semibold text-blue-600">
-            {weather.name} 현재 {weather.weather[0].description} 🌡️{" "}
-            {weather.main.temp}°C
-          </div>
-        ) : (
-          <div className="text-sm text-gray-500">
-            날씨 정보를 불러오는 중...
+        {weather && (
+          <div className="mt-6 p-6 bg-blue-100 rounded-2xl shadow-lg text-center">
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">
+              📍 {weather.name}
+            </h2>
+            <div className="flex items-center justify-center mb-2">
+              <img
+                src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
+                alt="weather icon"
+                className="w-16 h-16"
+              />
+
+              <span className="text-4xl font-bold ml-4">
+                {Math.round(weather.main.temp)}°C
+              </span>
+            </div>
+            <p className="text-lg font-medium text-gray-700 capitalize">
+              {weather.weather[0].description}
+            </p>
           </div>
         )}
 
