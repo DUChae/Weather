@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "./app/store";
+import { setWeather } from "./features/weather/weatherSlice";
 
 function App() {
+  const dispatch = useDispatch();
+  const weather = useSelector((state: RootState) => state.weather.data);
+
   const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(
     null
   );
-  interface WeatherData {
-    name: string;
-    weather: { description: string }[];
-    main: { temp: number };
-  }
-
-  const [weather, setWeather] = useState<WeatherData | null>(null);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -33,8 +32,7 @@ function App() {
 
           const response = await fetch(url);
           const data = await response.json();
-          setWeather(data);
-          console.log("받은 날씨 데이터:", data);
+          dispatch(setWeather(data)); // 전역 상태로 저장
         } catch (error) {
           console.error("날씨 정보 에러:", error);
         }
@@ -42,7 +40,7 @@ function App() {
 
       fetchWeather();
     }
-  }, [coords]);
+  }, [coords, dispatch]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-sky-200 to-white text-gray-800">
@@ -63,7 +61,6 @@ function App() {
                 alt="weather icon"
                 className="w-16 h-16"
               />
-
               <span className="text-4xl font-bold ml-4">
                 {Math.round(weather.main.temp)}°C
               </span>
