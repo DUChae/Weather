@@ -1,18 +1,26 @@
+// features/weather/weatherSlice.ts
+
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+interface WeatherData {
+  name: string;
+  weather: { description: string; icon: string }[];
+  main: { temp: number };
+}
+
 interface WeatherState {
-  data: any | null;
+  data: WeatherData | null;
 }
 
 const initialState: WeatherState = {
   data: null,
 };
 
-export const weatherSlice = createSlice({
+const weatherSlice = createSlice({
   name: "weather",
   initialState,
   reducers: {
-    setWeather: (state, action: PayloadAction<any>) => {
+    setWeather: (state, action: PayloadAction<WeatherData>) => {
       state.data = action.payload;
     },
   },
