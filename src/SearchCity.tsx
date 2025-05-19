@@ -17,6 +17,12 @@ function SearchCity() {
       console.error(error);
     }
   };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
 }
 
 export default SearchCity;
