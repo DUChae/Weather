@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "./app/store";
 import { setCoords } from "./features/coords/coordsSlice";
 import { setWeather } from "./features/weather/weatherSlice";
+import { fetchWeatherByCoords } from "./api/weather";
 
 function App() {
   const dispatch = useDispatch();
@@ -24,14 +25,13 @@ function App() {
 
   // 날씨 데이터 가져오기
   useEffect(() => {
-    if (coords.lat && coords.lon) {
+    if (coords.lat !== null && coords.lon !== null) {
       const fetchWeather = async () => {
         try {
-          const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
-          const url = `https://api.openweathermap.org/data/2.5/weather?lat=${coords.lat}&lon=${coords.lon}&appid=${apiKey}&units=metric&lang=kr`;
-
-          const response = await fetch(url);
-          const data = await response.json();
+          const data = await fetchWeatherByCoords(
+            coords.lat as number,
+            coords.lon as number
+          );
           dispatch(setWeather(data));
         } catch (error) {
           console.error("날씨 정보 에러:", error);
@@ -44,23 +44,23 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-sky-200 to-white text-gray-800">
-      <h1 className="text-3xl font-bold mb-4">오늘 뭐하지? 🌤</h1>
+      <h1 className="text-4xl font-bold mb-6">오늘 뭐하지? 🌤</h1>
 
-      <div className="bg-white p-6 rounded-2xl shadow-md w-80 text-center">
-        <p className="mb-2">위치를 기반으로 날씨를 확인하고</p>
-        <p className="mb-4 font-semibold">야외활동을 추천해드려요!</p>
+      <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-2xl sm:max-w-lg md:max-w-3xl text-center">
+        <p className="text-2xl mb-2">위치를 기반으로 날씨를 확인하고</p>
+        <p className="text-xl mb-4 font-semibold">야외활동을 추천해드려요!</p>
 
         {weather && (
           <>
             <div className="mt-6 p-6 bg-blue-100 rounded-2xl shadow-lg text-center">
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+              <h2 className="text-5xl font-bold text-gray-800 mb-2">
                 📍 {weather.name}
               </h2>
               <div className="flex items-center justify-center mb-2">
                 <img
                   src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
                   alt="weather icon"
-                  className="w-16 h-16"
+                  className="w-20 h-20"
                 />
                 <span className="text-4xl font-bold ml-4">
                   {Math.round(weather.main.temp)}°C
@@ -73,8 +73,8 @@ function App() {
 
             {/* 활동 추천 컴포넌트 */}
             <div className="mt-4 bg-white rounded-xl p-4 shadow text-gray-700">
-              <h3 className="font-semibold text-lg mb-2">추천 활동 🎯</h3>
-              <p>
+              <h3 className="font-semibold text-2xl mb-2">추천 활동 🎯</h3>
+              <p className="text-xl font-bold">
                 {getActivityRecommendation(
                   weather.main.temp,
                   weather.weather[0].description
@@ -101,7 +101,7 @@ function App() {
 // 활동 추천 함수
 function getActivityRecommendation(temp: number, description: string): string {
   if (description.includes("비") || description.includes("눈")) {
-    return "우산을 챙기고 실내에서 독서를 즐겨보세요 📚";
+    return "꿀꿀한 날, 넷플릭스 어떤가요? 💻";
   }
   if (temp >= 25) {
     return "날씨가 좋아요! 가까운 공원 산책 어때요? 🌳";
